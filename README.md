@@ -40,6 +40,10 @@ Codex로 새 프로젝트 폴더, 참고 자료, 산출물, 로그, 요구사항
 [AGENTS_REQ.md](AGENTS_REQ.md) 안의 `<CODEX_PROJECTS_ROOT>`는 설치한
 `codex_projects` 폴더의 실제 절대 경로로 바뀐 뒤 들어가야 합니다.
 
+`AGENTS_REQ.md`는 전역 지침에 들어가도 부담이 작도록 최소 규칙만 담습니다.
+성능 저하를 줄이기 위해 상세 절차는 평소에 읽지 않고, `새 프로젝트 생성`
+같은 트리거가 있을 때 runbook을 읽는 구조입니다.
+
 설정 화면에서 추가하는 방법:
 
 1. Codex 클라이언트의 설정 화면을 엽니다.
@@ -213,6 +217,20 @@ Codex에 입력:
 생성 후에는 원본 자료는 `attachments/`, 분석 결과는 `configs/`, 발표 자료는 `presentations/`, 작업 로그는 `logs/`, 요구사항과 진행 상태는 `plans/`에 정리됩니다.
 
 자세한 폴더 구조와 운영 기준은 [OPERATING_GUIDE.md](OPERATING_GUIDE.md)를 참고하세요.
+
+## 토큰 절감 방식
+
+이 템플릿은 검증 품질을 낮추지 않는 범위에서 토큰 사용량을 줄이도록
+구성되어 있습니다.
+
+- 전역 지침에는 짧은 trigger와 context-budget 규칙만 둡니다.
+- 상세 생성 절차는 `PROJECT_CREATION_RUNBOOK.md`가 필요할 때만 담당합니다.
+- 필수 Markdown 골격은 파일 생성 직전에만 `PROJECT_FILE_SKELETONS.md`를 읽습니다.
+- 긴 문서, PDF, 로그, 코드베이스는 파일 목록과 요약/index를 먼저 확인합니다.
+- 정확도나 검증이 필요할 때는 요약만 믿지 않고 원문 또는 실제 소스 섹션을 다시 확인합니다.
+
+자세한 기준은 [OPERATING_GUIDE.md](OPERATING_GUIDE.md)의
+`토큰 사용량 최적화 기준`을 참고하세요.
 
 ## 내부 문서
 

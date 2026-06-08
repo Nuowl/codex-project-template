@@ -18,14 +18,20 @@ Examples:
 - `C:\Users\name\codex_projects`
 - `/home/name/codex_projects`
 
-## General Context Budget Discipline
+## Performance-Safe Context Budget Discipline
 
 Add these rules to the agent's global or project instruction file if they are
 not already present:
 
+- Keep global instructions short and avoid duplicating rules across global,
+  project, and task-specific guidance.
+- Put detailed workflows in runbooks or project-local files and load them only
+  when the matching trigger or task requires them.
 - Before reading large files, logs, generated outputs, or broad source trees,
   use file lists and fast search such as `rg` to narrow the relevant scope.
 - Prefer targeted reads over bulk loading.
+- For large recurring inputs, create or reuse summary/index files before
+  rereading original PDFs, logs, or source trees.
 - For code changes, verify conclusions against the actual source, tests, and
   config files rather than relying only on summaries or indexes.
 - Keep one session focused on one coherent unit of work. When the client
@@ -36,6 +42,8 @@ not already present:
 - Do not dump full logs, generated files, dependency trees, or broad test output
   when a focused excerpt is enough.
 - For failures, keep the exact command, exit status, and relevant error lines.
+- Do not reduce verification quality just to save context; reopen exact source
+  sections when accuracy, safety, or user-visible correctness requires it.
 
 ## Codex Project Trigger
 
@@ -52,13 +60,11 @@ creation flow yet. Ask for confirmation instead:
 
 Only the exact trigger `새 프로젝트 생성` starts project creation.
 
-First, locate the runbook at
-`<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md`. The placeholder
-`<CODEX_PROJECTS_ROOT>` must already have been replaced with the actual absolute
-path of the installed `codex_projects` folder.
+Runbook path:
+`<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md`.
 
 If the runbook exists:
-1. Read `<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md`.
+1. Read the runbook.
 2. Follow its `Progressive Intake Flow`.
 3. Follow its `Response Consistency` rules unless there is a blocking issue or
    the user explicitly asks for a different style.

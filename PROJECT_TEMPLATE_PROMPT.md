@@ -1,14 +1,16 @@
 # Codex Project and Harness Engineering Template
 
 This file is the global design document for creating and operating project
-reference folders under `~/codex_projects`. For routine project creation, use
-`PROJECT_CREATION_RUNBOOK.md`; for required Markdown file skeletons, use
-`PROJECT_FILE_SKELETONS.md`.
+reference folders under the installed `codex_projects` folder. For routine
+project creation, use `PROJECT_CREATION_RUNBOOK.md`; for required Markdown file
+skeletons, use `PROJECT_FILE_SKELETONS.md`.
 
 Path convention:
-- Use `~/codex_projects` as the portable default reference root.
-- Expand `~` to the current user's home directory before checking or creating
-  paths.
+- Use `<CODEX_PROJECTS_ROOT>` for the installed `codex_projects` folder's
+  absolute path.
+- The public default install creates `codex_projects` in the current terminal
+  location and removes its `.git` folder so it is a normal workspace folder.
+- Use `~/codex_projects` only for the optional home-directory install.
 - Do not hard-code a specific user's home path in generated project files unless
   the user explicitly asks for it.
 

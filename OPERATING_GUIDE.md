@@ -81,7 +81,7 @@
 - 생성 질문, 승인 흐름, 필수 폴더/파일 목록을 바꾸면 `PROJECT_CREATION_RUNBOOK.md`와 `PROJECT_TEMPLATE_PROMPT.md`를 함께 확인합니다.
 - 필수 Markdown 문서의 내부 구조를 바꾸면 `PROJECT_FILE_SKELETONS.md`와 `PROJECT_TEMPLATE_PROMPT.md`의 문서 역할 설명을 함께 확인합니다.
 - 트리거 경로나 읽기 순서를 바꾸면 `AGENTS_REQ.md`와 실제 사용하는 에이전트 지시 파일을 함께 갱신합니다.
-- 기본 경로 `~/codex_projects`를 바꾸면 README에 적힌 경로 안내도 함께 갱신합니다.
+- 설치 루트 표기인 `<CODEX_PROJECTS_ROOT>`를 바꾸면 README에 적힌 경로 안내도 함께 갱신합니다.
 
 이 분리는 토큰 사용량을 줄이기 위한 것입니다. 실행 중에는 짧은 runbook과 필요 시 skeleton만 읽고, 긴 설계 문서는 평소에 읽지 않는 구조를 유지하는 것이 좋습니다.
 
@@ -146,9 +146,9 @@ Codex에서는 `.codex/AGENTS.md`에 이 지침을 넣을 수 있습니다.
 
 ```text
 When the user enters exactly "새 프로젝트 생성", read
-~/codex_projects/PROJECT_CREATION_RUNBOOK.md and follow its Progressive Intake Flow.
+<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md and follow its Progressive Intake Flow.
 Before creating Markdown files, read
-~/codex_projects/PROJECT_FILE_SKELETONS.md and use its skeletons exactly.
+<CODEX_PROJECTS_ROOT>/PROJECT_FILE_SKELETONS.md and use its skeletons exactly.
 ```
 
 도구별로 수정할 가능성이 높은 위치는 다음과 같습니다.
@@ -184,20 +184,21 @@ Claude reference project
 
 ### 경로 규칙
 
-기본 경로는 여러 사용자 환경에서 쓰기 쉽도록 `~/codex_projects`로 되어 있습니다.
+공개용 기본 설치는 현재 터미널 위치에 `codex_projects` 폴더를 만들고 `.git`
+폴더를 제거해 일반 작업 폴더로 쓰는 방식입니다.
 
-다른 위치를 쓰고 싶다면 [PROJECT_TEMPLATE_PROMPT.md](PROJECT_TEMPLATE_PROMPT.md), [PROJECT_CREATION_RUNBOOK.md](PROJECT_CREATION_RUNBOOK.md), [AGENTS_REQ.md](AGENTS_REQ.md)에서 아래 값을 원하는 경로로 바꾸면 됩니다.
-
-```text
-~/codex_projects
-```
+문서와 에이전트 지시에서는 설치 루트를 `<CODEX_PROJECTS_ROOT>`로 표기합니다.
+이는 사용자가 설치한 `codex_projects` 폴더의 실제 절대 경로입니다.
 
 예:
 
-```text
-~/ai_refs
-~/Documents/agent_refs
-```
+- `G:\GNU\codex_projects`
+- `C:\Users\name\codex_projects`
+- `/home/name/codex_projects`
+
+홈 디렉터리에 설치하기로 선택한 경우에만 `~/codex_projects`를 사용할 수
+있습니다. 이 경우에도 AGENTS_REQ.md를 실제 지시 파일에 복사할 때는
+`<CODEX_PROJECTS_ROOT>`를 실제 절대 경로로 바꾸는 것이 명확합니다.
 
 ### 파일 읽기와 생성 권한
 

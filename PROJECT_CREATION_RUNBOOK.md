@@ -10,6 +10,13 @@ This is the execution document for creating a new Codex project.
 Use `PROJECT_TEMPLATE_PROMPT.md` only for design review. Read
 `PROJECT_FILE_SKELETONS.md` only after the user approves project creation.
 
+Path convention:
+- `<CODEX_PROJECTS_ROOT>` is the absolute path of the installed
+  `codex_projects` folder.
+- Create new project folders under `<CODEX_PROJECTS_ROOT>`.
+- Use `~/codex_projects` only when the user explicitly installed this template
+  in the home directory.
+
 ## Response Consistency
 
 When the user enters `새 프로젝트 생성`, reply in Korean:
@@ -94,9 +101,9 @@ Step 5:
 3. Collect design reference materials when needed.
    - Use Step 3.
    - After the project folder name is known and the user agrees, create only:
-     - `~/codex_projects/{project folder name}/`
-     - `~/codex_projects/{project folder name}/attachments/`
-     - `~/codex_projects/{project folder name}/attachments/project-design/`
+     - `<CODEX_PROJECTS_ROOT>/{project folder name}/`
+     - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
+     - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/project-design/`
    - Ask the user to place design reference files in
      `attachments/project-design/`.
    - Inspect the file list before proposing the project brief.
@@ -157,27 +164,27 @@ Requirements:
 
 Create this structure after approval:
 
-- `~/codex_projects/{project folder name}/`
-- `~/codex_projects/{project folder name}/attachments/`
-- `~/codex_projects/{project folder name}/screenshots/`
-- `~/codex_projects/{project folder name}/plans/`
-- `~/codex_projects/{project folder name}/configs/`
-- `~/codex_projects/{project folder name}/presentations/`
-- `~/codex_projects/{project folder name}/logs/`
-- `~/codex_projects/{project folder name}/NOTES.md`
-- `~/codex_projects/{project folder name}/plans/REQUIREMENTS.md`
-- `~/codex_projects/{project folder name}/plans/WORKFLOW.md`
-- `~/codex_projects/{project folder name}/plans/CHECKLIST.md`
-- `~/codex_projects/{project folder name}/plans/TRACEABILITY.md`
-- `~/codex_projects/{project folder name}/plans/STATUS.md`
-- `~/codex_projects/{project folder name}/plans/DECISIONS.md`
-- `~/codex_projects/{project folder name}/logs/LOG_TEMPLATE.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/screenshots/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/configs/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/presentations/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/logs/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/NOTES.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/REQUIREMENTS.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/WORKFLOW.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/CHECKLIST.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/TRACEABILITY.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/STATUS.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/DECISIONS.md`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/logs/LOG_TEMPLATE.md`
 
 ## Creation Checks
 
 Before creating or editing anything:
 
-1. Check that `~/codex_projects` exists after expanding `~`.
+1. Check that `<CODEX_PROJECTS_ROOT>` exists.
 2. Check whether the related code path exists, unless it is `none`.
 3. Check whether the target project folder already exists.
 4. If it already exists, do not overwrite existing files. Inspect the structure

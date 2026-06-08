@@ -4,8 +4,19 @@ Copy these instructions into the agent's global or project instruction file if
 you want the `codex_projects` project flow to work from the short trigger.
 
 These instructions are intentionally minimal. They assume the project creation
-runbook exists at `~/codex_projects/PROJECT_CREATION_RUNBOOK.md` and the required
-file skeletons exist at `~/codex_projects/PROJECT_FILE_SKELETONS.md`.
+runbook exists at `<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md` and the
+required file skeletons exist at
+`<CODEX_PROJECTS_ROOT>/PROJECT_FILE_SKELETONS.md`.
+
+Before copying this file into the real Codex instruction file, replace every
+`<CODEX_PROJECTS_ROOT>` placeholder with the absolute path of the installed
+`codex_projects` folder.
+
+Examples:
+
+- `G:\GNU\codex_projects`
+- `C:\Users\name\codex_projects`
+- `/home/name/codex_projects`
 
 ## General Context Budget Discipline
 
@@ -41,12 +52,13 @@ creation flow yet. Ask for confirmation instead:
 
 Only the exact trigger `새 프로젝트 생성` starts project creation.
 
-First, locate the runbook at `~/codex_projects/PROJECT_CREATION_RUNBOOK.md`.
-Expand `~` to the current user's home directory before checking or creating
-paths.
+First, locate the runbook at
+`<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md`. The placeholder
+`<CODEX_PROJECTS_ROOT>` must already have been replaced with the actual absolute
+path of the installed `codex_projects` folder.
 
 If the runbook exists:
-1. Read `~/codex_projects/PROJECT_CREATION_RUNBOOK.md`.
+1. Read `<CODEX_PROJECTS_ROOT>/PROJECT_CREATION_RUNBOOK.md`.
 2. Follow its `Progressive Intake Flow`.
 3. Follow its `Response Consistency` rules unless there is a blocking issue or
    the user explicitly asks for a different style.
@@ -62,16 +74,17 @@ If the runbook exists:
    approved project root, `attachments/`, and `attachments/project-design/`;
    then inspect that folder's file list before proposing the project brief.
 10. Immediately before creating approved Markdown files, read
-    `~/codex_projects/PROJECT_FILE_SKELETONS.md` and use its skeletons exactly.
+    `<CODEX_PROJECTS_ROOT>/PROJECT_FILE_SKELETONS.md` and use its skeletons
+    exactly.
 
 If the runbook does not exist, say so and ask the user for the correct runbook
 path. Do not guess another location.
 
 ## Ongoing Codex Project Work
 
-When the user asks to continue or work inside a project under `~/codex_projects`,
-treat it as lightweight project work unless the user explicitly asks
-for another workflow.
+When the user asks to continue or work inside a project under
+`<CODEX_PROJECTS_ROOT>`, treat it as lightweight project work unless the user
+explicitly asks for another workflow.
 
 For ongoing work, keep context loading small:
 1. Read the project's `NOTES.md` and `plans/STATUS.md` first.

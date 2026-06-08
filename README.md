@@ -191,7 +191,8 @@ Copy-Item "$HOME\Downloads\codex-project-template-main\*.md" ".\codex_projects\"
 실행하기 전에 [AGENTS_REQ.md](AGENTS_REQ.md)의 내용이 Codex 전역 지시 파일
 또는 프로젝트 지시 파일에 정상적으로 추가되었는지 확인하세요. 특히
 `<CODEX_PROJECTS_ROOT>`가 실제 설치한 `codex_projects` 폴더의 절대 경로로
-바뀌어 있어야 합니다.
+바뀌어 있어야 합니다. 아직 지침을 추가하지 않았다면
+[2단계: Codex 지침 추가](#2단계-codex-지침-추가)를 먼저 진행하세요.
 
 Codex에 입력:
 

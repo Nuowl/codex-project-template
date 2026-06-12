@@ -30,6 +30,7 @@
   파일 탐색기 형태로 표시
 - Codex 설정 안내를 Windows/Linux 자동 추가, Codex 설정 화면 수동 추가,
   파일 수동 추가 방식으로 정리
+- Windows PowerShell 자동 추가 명령에 UTF-8 인코딩을 명시해 한글 깨짐 방지
 - 지침 갱신 시 기존 `codex_projects` 지침 중복 여부를 확인하도록 안내
 - 기존 프로젝트를 Codex 프로젝트로 이전하는 사용 흐름 추가
 - 새 프로젝트 루트에 `.codex-project.json` 식별자 파일을 생성하도록 추가

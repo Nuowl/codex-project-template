@@ -109,8 +109,8 @@ Step 5:
    - Inspect the file list before proposing the project brief.
    - Inspecting the reference file list during intake does not mark Analysis
      checklist items as complete.
-   - Do not create `plans/`, `configs/`, `presentations/`, `logs/`, or
-     `NOTES.md` before project brief approval.
+   - Do not create `.codex-project.json`, `plans/`, `configs/`,
+     `presentations/`, `logs/`, or `NOTES.md` before project brief approval.
 
 4. Define harness intent.
    - Use Step 4.
@@ -145,19 +145,23 @@ Requirements:
 ```
 
 6. Create the project only after approval.
-   - Create only approved folders and Markdown files.
-   - When possible, write approved Markdown files directly to disk.
+   - Create only approved folders and project files.
+   - When possible, write approved project files directly to disk.
    - Do not print full generated file contents in chat unless the user
      explicitly asks for them.
    - If the environment cannot write files directly, create content in small
      batches so output limits do not truncate the documents.
-   - Read `PROJECT_FILE_SKELETONS.md` immediately before writing Markdown
-     files.
+   - Read `PROJECT_FILE_SKELETONS.md` immediately before writing project files.
    - Use those skeletons exactly; fill unknown fields with `None`,
      `Not started`, `No outputs yet`, `No logs yet`, or `To be determined`.
-   - Do not omit required sections.
-   - Set `plans/STATUS.md` to the Intake phase and include
-     `Last reviewed: {YYYY-MM-DD}`.
+   - Create `.codex-project.json` as valid JSON with `schema` set to
+     `codex_projects`, `version` set to `1`, `project_name` set to the approved
+     project name, `project_folder` set to the approved folder name, and
+     `created_at` set to `{YYYY-MM-DD}`.
+   - Do not omit required JSON keys, Markdown sections, or required tables.
+   - Set `plans/STATUS.md` to the Intake phase and preserve the required
+     resume headings: `Last Updated`, `Current State`, `Last Completed`,
+     `Next Action`, and `Blocked By`.
    - Record the initial setup decision in `plans/DECISIONS.md`.
 
 ## Required Structure
@@ -165,6 +169,7 @@ Requirements:
 Create this structure after approval:
 
 - `<CODEX_PROJECTS_ROOT>/{project folder name}/`
+- `<CODEX_PROJECTS_ROOT>/{project folder name}/.codex-project.json`
 - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
 - `<CODEX_PROJECTS_ROOT>/{project folder name}/screenshots/`
 - `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/`
@@ -188,8 +193,11 @@ Before creating or editing anything:
 2. Check whether the related code path exists, unless it is `none`.
 3. Check whether the target project folder already exists.
 4. If it already exists, do not overwrite existing files. Inspect the structure
-   and add only missing folders or missing documents.
-5. Briefly report what will be created before making changes.
+   and add only missing folders or missing project files.
+5. If `.codex-project.json` already exists, confirm it is valid JSON with
+   `schema: "codex_projects"` and `project_folder` matching the target folder
+   name. If it conflicts, stop and ask the user how to proceed.
+6. Briefly report what will be created before making changes.
 
 For completion, respond in this structure:
 

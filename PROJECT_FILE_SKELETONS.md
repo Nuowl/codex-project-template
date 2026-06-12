@@ -1,8 +1,20 @@
 # Project File Skeletons
 
 Use these skeletons when creating a new project. They are mandatory for initial
-project creation. Keep headings and required tables even when some values are
-not known yet.
+project creation. Keep headings, required tables, and JSON keys even when some
+values are not known yet.
+
+## `.codex-project.json`
+
+```json
+{
+  "schema": "codex_projects",
+  "version": 1,
+  "project_name": "{Project Name}",
+  "project_folder": "{project folder name}",
+  "created_at": "{YYYY-MM-DD}"
+}
+```
 
 ## `NOTES.md`
 
@@ -35,10 +47,20 @@ This directory is a lightweight project workspace for {project purpose}.
 - Prefer existing summaries under `configs/{group}/` before rereading full
   source documents or large code files.
 
+## State Loop Policy
+
+- Use this project as the active project only when the user request targets this
+  project, a file inside it, or the related path recorded here.
+- Do not update this project's `plans/` files for template/setup/general
+  discussion or unrelated coding tasks.
+- After meaningful project work, update `plans/STATUS.md` while preserving its
+  required resume headings; update other planning files only when their tracked
+  content changed.
+
 ## Context Reuse Policy
 
 - Do not read previous full logs by default.
-- Check `plans/STATUS.md` for `Latest Log` first.
+- Check `plans/STATUS.md` for the latest log reference first.
 - Read only the specific log needed for the current task.
 - If a long log is repeatedly needed, summarize it under
   `configs/{group}/summary.md`.
@@ -49,7 +71,7 @@ This directory is a lightweight project workspace for {project purpose}.
 - `plans/WORKFLOW.md`: workflow phases and expected outputs
 - `plans/CHECKLIST.md`: setup, analysis, output, verification, and handoff checks
 - `plans/TRACEABILITY.md`: requirement-to-output and verification mapping
-- `plans/STATUS.md`: current state and next action
+- `plans/STATUS.md`: current state, last completed work, blockers, and next action
 - `plans/DECISIONS.md`: significant decisions
 
 ## Reference File Layout
@@ -188,37 +210,31 @@ Acceptance criteria:
 ```markdown
 # Status
 
-Last reviewed: {YYYY-MM-DD}
+## Last Updated
 
-## Current Phase
-
-Intake
-
-## Active Output Group
-
-Not selected yet
-
-## Latest Generated Output
-
-No outputs yet
-
-## Latest Log
-
-No logs yet
+{YYYY-MM-DD}
 
 ## Current State
 
-- Project reference structure has been initialized.
+- Current phase: Intake
+- Active output group: Not selected yet
+- Latest generated output: No outputs yet
+- Latest log: No logs yet
 - Related code path: {related code path or `none`}
 - Reference inputs: {reference input summary}
 
-## Blockers
+## Last Completed
 
-- {blocker or `None`}
+- Project reference structure has been initialized.
+- Required planning documents have been created.
 
 ## Next Action
 
 {next action}
+
+## Blocked By
+
+- {blocker or `None`}
 ```
 
 ## `plans/DECISIONS.md`

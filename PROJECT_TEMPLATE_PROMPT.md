@@ -2,7 +2,7 @@
 
 This file is the global design document for creating and operating project
 reference folders under the installed `codex_projects` folder. For routine
-project creation, use `PROJECT_CREATION_RUNBOOK.md`; for required Markdown file
+project creation, use `PROJECT_CREATION_RUNBOOK.md`; for required project file
 skeletons, use `PROJECT_FILE_SKELETONS.md`.
 
 Path convention:
@@ -29,10 +29,11 @@ documents.
 | Concern | Canonical source |
 | --- | --- |
 | Execution flow, fixed intake questions, approval gates, and completion reporting | `PROJECT_CREATION_RUNBOOK.md` |
-| Required Markdown document skeletons | `PROJECT_FILE_SKELETONS.md` |
+| Required JSON/Markdown file skeletons | `PROJECT_FILE_SKELETONS.md` |
 | Detailed operating rules, token optimization, and other-agent adaptation | `OPERATING_GUIDE.md` |
 | High-level design intent, document roles, audit criteria, and structure principles | `PROJECT_TEMPLATE_PROMPT.md` |
-| Minimal instructions to copy into an agent | `AGENTS_REQ.md` |
+| Source text to copy into the real agent instruction file, including trigger rules and ongoing project state-loop gate | `AGENTS_REQ.md` |
+| Public version change summary and update reference | `PATH.md` |
 
 ## Progressive Project Creation Prompt
 
@@ -92,20 +93,22 @@ overwrite protection, direct file-writing safety rules, and
 | `configs/` | Generated-output folder for analysis, summaries, extracted notes, converted files, configs, and environment material. |
 | `presentations/` | Generated-output folder for slide decks, presentation scripts, chapter outputs, and presentation assets. |
 | `logs/` | Generated-output folder for work logs, request summaries, verification notes, and remaining checks. |
+| `.codex-project.json` | Machine-readable project identity file used to verify the project root before reading `plans/`. |
 | `NOTES.md` | Short project index with purpose, key paths, folder rules, and links to `plans/` documents. |
 
-## Required Document Roles
+## Required File Roles
 
-Create these Markdown files for every new project.
+Create these files for every new project.
 
 | File | Required Content |
 | --- | --- |
+| `.codex-project.json` | `schema`, `version`, `project_name`, `project_folder`, and `created_at` for machine-readable project identity. |
 | `NOTES.md` | Project purpose, related code path, external reference info, current goal, known context, folder layout, planning file links, checks done, remaining checks. |
 | `plans/REQUIREMENTS.md` | User requirements with stable IDs, acceptance criteria with stable IDs, out-of-scope items if any. |
 | `plans/WORKFLOW.md` | End-to-end workflow plan, phases, expected inputs, expected outputs, phase status. |
 | `plans/CHECKLIST.md` | Project checklist from setup through source review, output generation, verification, and handoff. |
 | `plans/TRACEABILITY.md` | Lightweight mapping from requirement IDs to requirement-supporting outputs, logs, verification evidence, and status. |
-| `plans/STATUS.md` | Overall status, last reviewed date, current phase, active output group, latest generated output, latest log, next action. |
+| `plans/STATUS.md` | Resume-oriented status with `Last Updated`, `Current State`, `Last Completed`, `Next Action`, and `Blocked By`, plus any current phase/output/log details needed under those headings. |
 | `plans/DECISIONS.md` | Date, decision ID, decision, rationale, and impact for important project choices. |
 | `logs/LOG_TEMPLATE.md` | Bilingual log template with an English working record and Korean user summary. |
 
@@ -114,31 +117,38 @@ and decision history in `plans/`.
 
 ## Initial Document Skeletons
 
-The canonical skeletons for required Markdown files live in
-`PROJECT_FILE_SKELETONS.md`. This template describes why those documents exist;
-it does not duplicate their required headings, tables, or placeholder rules.
+The canonical skeletons for required project files live in
+`PROJECT_FILE_SKELETONS.md`. This template describes why those files exist; it
+does not duplicate their required keys, headings, tables, or placeholder rules.
 
 When creating a new project, use `PROJECT_CREATION_RUNBOOK.md` for execution and
-read `PROJECT_FILE_SKELETONS.md` immediately before writing Markdown files.
+read `PROJECT_FILE_SKELETONS.md` immediately before writing project files.
 
 ## Agent Re-Read Rules
 
 The design uses progressive context loading. Agents should start with the
 smallest project index, then read deeper planning, input, or log files only when
-the current task needs them.
+the current task needs them. The executable loop gate and active-project
+selection rules come from the installed agent instructions copied from
+`AGENTS_REQ.md`; this file only records the design intent.
 
 Principles:
+- Run the state loop only for actual work inside a specific Codex project, not
+  for template/setup/general discussion.
+- Identify the active project before reading or updating project `plans/`
+  files, and verify `.codex-project.json` when present.
 - Begin ongoing project work from `NOTES.md` and `plans/STATUS.md`.
 - Inspect file lists before reading large PDFs, screenshots, logs, or source
   trees.
 - Prefer durable summaries under `configs/{group}/` before rereading full
   source material.
-- Keep `plans/STATUS.md` current after meaningful work, and update other
-  planning files only when their contents actually change.
+- Keep `plans/STATUS.md` current after meaningful work, preserving its required
+  resume headings, and update other planning files only when their contents
+  actually change.
 - Keep one session focused on one coherent unit of work.
 
-For detailed operating rules, use `OPERATING_GUIDE.md`. For minimal agent
-instructions that can be copied into a tool configuration, use `AGENTS_REQ.md`.
+For detailed operating rules, use `OPERATING_GUIDE.md`. For the source text to
+copy into the real agent instruction file, use `AGENTS_REQ.md`.
 
 ## Output Grouping Rules
 
@@ -231,12 +241,14 @@ principles aligned with that guide:
    possible.
 5. Link outputs to `plans/TRACEABILITY.md` only when they satisfy, verify, or
    materially support a requirement.
-6. Keep `plans/STATUS.md` current after meaningful work.
+6. Keep `plans/STATUS.md` current after meaningful work while preserving its
+   required resume headings.
 7. Do not leave temporary files, unclear duplicates, debug artifacts, or dummy
    files unless explicitly requested.
 
 ## Recommended File Names
 
+- `.codex-project.json`
 - `attachments/{source-title}.pdf`
 - `screenshots/{topic-or-screen}.png`
 - `configs/{chapter-or-topic}/summary.md`

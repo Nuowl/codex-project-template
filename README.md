@@ -69,6 +69,7 @@ git clone https://github.com/Nuowl/codex-project-template.git ./codex_projects
 rm -rf ./codex_projects/.git
 ls ./codex_projects/*.md
 ```
+운영체제에 맞는 명령어를 터미널에 입력합니다.
 
 ### 선택 설치: 홈 디렉터리에 설치
 
@@ -171,6 +172,7 @@ ROOT="$(pwd)/codex_projects"
 mkdir -p ~/.codex
 sed "s|<CODEX_PROJECTS_ROOT>|$ROOT|g" ./codex_projects/AGENTS_REQ.md >> ~/.codex/AGENTS.md
 ```
+운영체제에 맞는 명령어를 터미널에 입력합니다.
 
 주의: 위 명령은 `<CODEX_PROJECTS_ROOT>`를 자동으로 실제 설치 경로로
 치환한 뒤 `~/.codex/AGENTS.md`에 내용을 덧붙입니다. 이미 같은 내용이

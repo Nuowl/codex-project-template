@@ -41,7 +41,7 @@ Codex로 새 프로젝트 폴더, 참고 자료, 산출물, 로그, 요구사항
 3. Codex 채팅에 `새 프로젝트 생성`을 입력합니다.
 
 이 문서에서 `<CODEX_PROJECTS_ROOT>`는 사용자가 설치한 `codex_projects`
-폴더의 실제 절대 경로를 뜻합니다. 예: `C:\Projects\codex_projects`,
+폴더의 실제 절대 경로를 뜻합니다. 예: `G:\Projects\codex_projects`,
 `C:\Users\name\codex_projects`, `/home/name/codex_projects`
 
 ## 설치 방법

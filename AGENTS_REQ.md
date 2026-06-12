@@ -56,7 +56,11 @@ If the runbook exists:
 4. Reply in Korean: `새 프로젝트 생성을 준비합니다. 단계별로 필요한 정보만 확인하겠습니다.`
 5. Use the runbook's fixed intake questions by default; skip questions only
    when the user already provided the information.
-6. Ask only the next 2-3 necessary intake questions at a time.
+6. Ask only the next unresolved fixed intake step block at a time.
+   Do not merge separate steps. On the initial trigger, ask only for project
+   name and folder name unless those are already known. After each user
+   response, ask only unresolved fields in the current step and do not repeat
+   answered fields.
 7. Treat this as lightweight project creation, not as a heavier planning
    framework. If the user explicitly invokes another workflow, follow that
    request instead.

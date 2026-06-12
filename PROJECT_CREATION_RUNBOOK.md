@@ -34,9 +34,22 @@ For normal intake steps:
 2. {question 2}
 ```
 
-Do not repeat known information during normal intake. Summarize only for
-design-reference folder approval, project brief approval, blockers, or final
-creation.
+Use the fixed step blocks as a cursor. Ask at most one fixed step block per
+assistant turn, unless the user already answered that step in the same message.
+Do not merge separate fixed steps.
+
+A step is resolved only when all required values for that step are known:
+- Step 1: project name and folder name
+- Step 2: related code/repository path or `none`
+- Step 3: design reference choice, either `있음` or `없음`
+- Step 4: project purpose and initial requirements
+- Step 5: `승인`, `수정`, or `보류`
+
+After each user response, ask only unresolved fields in the current step before
+advancing. Do not repeat known information during normal intake. Do not repeat
+a question already asked in the immediately previous turn unless the user's
+answer was missing or ambiguous. Summarize only for design-reference folder
+approval, project brief approval, blockers, or final creation.
 
 ## Fixed Intake Questions
 
@@ -89,17 +102,25 @@ Step 5:
 
 1. Identify the project.
    - Use Step 1.
+   - Ask Step 1 by itself. Do not include the related code path or design
+     reference questions in the initial trigger response.
    - If the user gives only a project name, propose a safe folder name and ask
      for confirmation.
 
 2. Locate related code context.
    - Use Step 2.
+   - Ask Step 2 only after the project name and folder name are known.
+   - Ask Step 2 by itself. Do not include the design reference or purpose
+     questions in the same assistant turn.
    - If a path is provided, check whether it exists.
    - Record the path only; do not modify files in the related code path.
    - Do not read the full source tree during intake.
 
 3. Collect design reference materials when needed.
    - Use Step 3.
+   - Ask Step 3 only after the related code path is known or explicitly `none`.
+   - Ask Step 3 by itself. Do not include project purpose or requirement
+     questions in the same assistant turn.
    - After the project folder name is known and the user agrees, create only:
      - `<CODEX_PROJECTS_ROOT>/{project folder name}/`
      - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
@@ -114,9 +135,14 @@ Step 5:
 
 4. Define harness intent.
    - Use Step 4.
+   - Ask Step 4 only after the design reference choice is resolved and, when
+     references are used, after the reference file list has been inspected.
+   - Ask unresolved Step 4 fields only. If the user provided a purpose but not
+     requirements, ask only for the missing requirements.
    - Convert requirements into stable `REQ-###` IDs and initial `AC-###` items.
 
 5. Propose the project brief.
+   - Propose the project brief only after Steps 1-4 are resolved.
    - Include project name, folder name, code path, reference scope, purpose,
      requirements, output grouping, and files to be created.
    - Use this response structure:

@@ -91,8 +91,8 @@ Linux/macOS:
 python3 ./codex_project_manager/setup.py
 ```
 
-이 명령은 manager 도구와 Codex 관리 지침만 갱신합니다. 사용자가 만든
-프로젝트 파일은 수정하지 않습니다.
+이 명령은 manager 도구와 Codex 관리 지침만 갱신합니다.  
+사용자가 만든 프로젝트 파일은 수정하지 않습니다.
 
 변경 없이 설치 상태만 확인하려면:
 
@@ -203,8 +203,7 @@ python3 ./codex_project_manager/migrate_projects.py --project "Project_A"
 ### `setup.py`를 찾지 못할 때
 
 현재 터미널이 `codex_project_manager` 상위 폴더인지 확인하세요.  
-Windows PowerShell에서는 `Get-Location`, Linux/macOS에서는 `pwd`를
-사용해 확인할 수 있습니다.
+Windows PowerShell에서는 `Get-Location`, Linux/macOS에서는 `pwd`를 사용해 확인할 수 있습니다.
 
 ### manager 업데이트가 `Tracked manager files have uncommitted changes`로 중단될 때
 
@@ -265,4 +264,4 @@ manager는 설정과 지침을 UTF-8로 명시적으로 읽고 씁니다.
 
 ---
 
-<big></big><strong>자세한 문서 요소, 운영 규칙, 유지보수 기준, 다른 에이전트로컬라이징 관련 정보는 를확인하세요.</big>
+<big></big><strong>자세한 문서 요소, 운영 규칙, 유지보수 기준, 다른 에이전트 로컬라이징 관련 정보는 [OPERATING_GUIDE.md](OPERATING_GUIDE.md)를 확인하세요.</big>

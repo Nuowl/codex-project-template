@@ -1,50 +1,49 @@
 # Version Path
 
-이 파일은 GitHub에 공개된 이전 버전과 현재 작업 버전의 차이를 빠르게
-확인하기 위한 간단한 변경 이력입니다.
+이 파일은 버전별 주요 변경사항을 정리한 내역입니다.
 
 ## V1_260608
 
-현재 GitHub에 올라가 있는 초기 공개 기준입니다.
+초기 공개 버전입니다.
 
-- `새 프로젝트 생성` 트리거와 기본 project creation runbook 제공
-- `README.md`에 설치, Codex 지침 추가, 기본 사용법, 토큰 절감 방식,
-  내부 문서 설명을 함께 안내
-- `PROJECT_CREATION_RUNBOOK.md`로 단계적 intake, 생성안 승인, 파일 생성
-  절차 제공
-- `PROJECT_FILE_SKELETONS.md`로 `NOTES.md`, `plans/`, `logs/` Markdown
-  skeleton 제공
-- `OPERATING_GUIDE.md`에 폴더 역할, `plans/` 문서 역할, 최소 handoff,
-  토큰 최적화, 다른 에이전트 응용 기준 제공
-- 프로젝트 식별은 주로 폴더 구조와 `NOTES.md`, `plans/STATUS.md`에 의존
+- `새 프로젝트 생성` 트리거 추가
+- 단계별 프로젝트 생성 runbook 제공
+- `NOTES.md`, `plans/`, `logs/` 기본 skeleton 제공
+- 설치, 사용, 폴더 구조, 운영 규칙 문서 제공
 
 ## V2_260612
 
-상태 루프 안정성, 공개 배포 문서 가독성, 프로젝트 식별 정확도를 개선한
-버전입니다.
+프로젝트 식별과 상태 관리를 개선한 버전입니다.
 
-- README를 일반 사용자용 설치/사용/트러블슈팅 중심으로 재정리
-- README의 내부 원리, 토큰 절감 설명, 상태 루프 설명을
-  `OPERATING_GUIDE.md`로 이동
-- README에서 개발자용 clone 안내를 제거하고, 생성 후 프로젝트 구조를
-  파일 탐색기 형태로 표시
-- Codex 설정 안내를 Windows/Linux 자동 추가, Codex 설정 화면 수동 추가,
-  파일 수동 추가 방식으로 정리
-- Windows PowerShell 자동 추가 명령에 UTF-8 인코딩을 명시해 한글 깨짐 방지
-- 지침 갱신 시 기존 `codex_projects` 지침 중복 여부를 확인하도록 안내
-- 기존 프로젝트를 Codex 프로젝트로 이전하는 사용 흐름 추가
-- 새 프로젝트 루트에 `.codex-project.json` 식별자 파일을 생성하도록 추가
-- active project root 판단 기준과 `.codex-project.json` 검증 기준 추가
-- 상태 루프 실행/비실행 기준을 명확히 분리
-- 의미 있는 작업의 기준과 `plans/STATUS.md` 갱신 조건을 명시
-- `plans/STATUS.md`의 필수 resume heading을 고정:
-  `Last Updated`, `Current State`, `Last Completed`, `Next Action`,
-  `Blocked By`
-- 기본 보고에서는 active project, 읽은 상태 파일, 갱신한 상태 파일 같은
-  loop 내부 정보를 숨기고, 사용자가 요청하거나 문제가 있을 때만 보고하도록
-  조정
-- `OPERATING_GUIDE.md`에 템플릿 문서 역할, 보장 수준과 한계, 유지보수
-  점검 기준을 추가
-- 공개 문서의 개인 경로 예시를 일반 경로 예시로 정리
-- `새 프로젝트 생성` 질문이 단계 사이에서 섞이거나 반복되지 않도록 각
-  intake step을 한 턴에 하나의 고정 블록으로 진행하도록 명시
+- README를 설치, 사용, 트러블슈팅 중심으로 재정리
+- Windows/Linux 지침 설치 방법과 UTF-8 한글 깨짐 방지 안내 추가
+- 기존 프로젝트 이전 절차 추가
+- `.codex-project.json` 프로젝트 식별자 추가
+- 활성 프로젝트 선택·검증 규칙 개선
+- `plans/STATUS.md` 상태 갱신 기준과 필수 항목 고정
+- `새 프로젝트 생성` 단계별 질문 흐름 개선
+- 운영 규칙과 유지보수 안내 보강
+
+## V3_260622
+
+Codex 지침 설치와 갱신을 개선한 버전입니다.
+
+- `install_agents.py` 자동 설치·갱신 기능 추가
+- 설치 경로 자동 인식 및 지침 경로 자동 설정
+- 반복 갱신 시 기존 지침 자동 교체 및 중복 방지
+- 갱신 전 `AGENTS.md.bak` 자동 백업
+- 개인 에이전트 지침 보존
+- UTF-8 한글 깨짐 방지
+- 설치 명령 및 트러블슈팅 안내 갱신
+
+## V4_260706
+
+관리 도구와 사용자 프로젝트 보관 영역을 분리한 버전입니다.
+
+- `codex_project_manager` 도구 폴더와 `codex_projects` workspace 분리
+- `setup.py`로 최초 설치, manager 업데이트, Codex 지침 갱신 통합
+- `~/.codex/codex-projects.json` 기반 manager/workspace 경로 설정 추가
+- `--adopt-legacy`로 자동화 적용 전 혼합 폴더를 프로젝트 이동 없이 전환
+- `migrate_projects.py`로 기존 프로젝트 구조 미리보기, 백업, 갱신 지원
+- README, 레거시 전환 가이드, 운영 가이드, 설계 참고 문서 역할 정리
+- 설치되는 에이전트 지침을 축소하고 토큰 절약·상태 루프 규칙 유지

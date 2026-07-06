@@ -9,7 +9,7 @@ values are not known yet.
 ```json
 {
   "schema": "codex_projects",
-  "version": 1,
+  "version": 2,
   "project_name": "{Project Name}",
   "project_folder": "{project folder name}",
   "created_at": "{YYYY-MM-DD}"

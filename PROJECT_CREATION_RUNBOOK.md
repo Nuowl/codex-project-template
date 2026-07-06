@@ -11,11 +11,11 @@ Use `PROJECT_TEMPLATE_PROMPT.md` only for design review. Read
 `PROJECT_FILE_SKELETONS.md` only after the user approves project creation.
 
 Path convention:
-- `<CODEX_PROJECTS_ROOT>` is the absolute path of the installed
-  `codex_projects` folder.
-- Create new project folders under `<CODEX_PROJECTS_ROOT>`.
-- Use `~/codex_projects` only when the user explicitly installed this template
-  in the home directory.
+- `<CODEX_PROJECT_MANAGER_ROOT>` is the absolute path of the installed manager
+  containing this runbook and the project skeletons.
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>` is the absolute path of the user project
+  workspace.
+- Create new project folders only under `<CODEX_PROJECTS_WORKSPACE_ROOT>`.
 
 ## Response Consistency
 
@@ -122,9 +122,9 @@ Step 5:
    - Ask Step 3 by itself. Do not include project purpose or requirement
      questions in the same assistant turn.
    - After the project folder name is known and the user agrees, create only:
-     - `<CODEX_PROJECTS_ROOT>/{project folder name}/`
-     - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
-     - `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/project-design/`
+     - `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/`
+     - `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/attachments/`
+     - `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/attachments/project-design/`
    - Ask the user to place design reference files in
      `attachments/project-design/`.
    - Inspect the file list before proposing the project brief.
@@ -177,11 +177,12 @@ Requirements:
      explicitly asks for them.
    - If the environment cannot write files directly, create content in small
      batches so output limits do not truncate the documents.
-   - Read `PROJECT_FILE_SKELETONS.md` immediately before writing project files.
+   - Read `<CODEX_PROJECT_MANAGER_ROOT>/PROJECT_FILE_SKELETONS.md` immediately
+     before writing project files.
    - Use those skeletons exactly; fill unknown fields with `None`,
      `Not started`, `No outputs yet`, `No logs yet`, or `To be determined`.
    - Create `.codex-project.json` as valid JSON with `schema` set to
-     `codex_projects`, `version` set to `1`, `project_name` set to the approved
+     `codex_projects`, `version` set to `2`, `project_name` set to the approved
      project name, `project_folder` set to the approved folder name, and
      `created_at` set to `{YYYY-MM-DD}`.
    - Do not omit required JSON keys, Markdown sections, or required tables.
@@ -194,28 +195,29 @@ Requirements:
 
 Create this structure after approval:
 
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/.codex-project.json`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/attachments/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/screenshots/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/configs/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/presentations/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/logs/`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/NOTES.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/REQUIREMENTS.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/WORKFLOW.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/CHECKLIST.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/TRACEABILITY.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/STATUS.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/plans/DECISIONS.md`
-- `<CODEX_PROJECTS_ROOT>/{project folder name}/logs/LOG_TEMPLATE.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/.codex-project.json`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/attachments/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/screenshots/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/configs/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/presentations/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/logs/`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/NOTES.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/REQUIREMENTS.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/WORKFLOW.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/CHECKLIST.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/TRACEABILITY.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/STATUS.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/plans/DECISIONS.md`
+- `<CODEX_PROJECTS_WORKSPACE_ROOT>/{project folder name}/logs/LOG_TEMPLATE.md`
 
 ## Creation Checks
 
 Before creating or editing anything:
 
-1. Check that `<CODEX_PROJECTS_ROOT>` exists.
+1. Check that `<CODEX_PROJECT_MANAGER_ROOT>` and
+   `<CODEX_PROJECTS_WORKSPACE_ROOT>` exist.
 2. Check whether the related code path exists, unless it is `none`.
 3. Check whether the target project folder already exists.
 4. If it already exists, do not overwrite existing files. Inspect the structure

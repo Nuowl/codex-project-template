@@ -206,6 +206,42 @@ python3 ./codex_project_manager/migrate_projects.py --project "Project_A"
 Windows PowerShell에서는 `Get-Location`, Linux/macOS에서는 `pwd`를
 사용해 확인할 수 있습니다.
 
+### manager 업데이트가 `Tracked manager files have uncommitted changes`로 중단될 때
+
+`codex_project_manager` 안의 파일을 직접 수정한 상태에서는 `setup.py`가 업데이트를 중단합니다.  
+GitHub 최신 파일로 덮어쓰면 로컬 수정 내용이 사라질 수 있기 때문입니다.
+
+수정 내용을 버리고 최신 manager로 맞추려면:
+
+Windows PowerShell:
+
+```powershell
+cd .\codex_project_manager
+git restore .
+cd ..
+python .\codex_project_manager\setup.py
+```
+
+Linux/macOS:
+
+```bash
+cd ./codex_project_manager
+git restore .
+cd ..
+python3 ./codex_project_manager/setup.py
+```
+
+### `Legacy workspace not found`가 나올 때
+
+레거시 전환 명령은 기존 `codex_projects` 폴더 안이 아니라, 그 바깥의
+상위 폴더에서 실행해야 합니다.
+
+```text
+{parent}/
+├─ codex_project_manager/    GitHub에서 갱신하는 도구
+└─ codex_projects/           사용자 프로젝트 보관 폴더
+```
+
 ### manager 업데이트가 거부될 때
 
 manager의 Git 추적 파일에 로컬 변경이 있거나, `origin`이 공식 GitHub

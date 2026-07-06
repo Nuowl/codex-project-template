@@ -182,9 +182,9 @@ Requirements:
    - Use those skeletons exactly; fill unknown fields with `None`,
      `Not started`, `No outputs yet`, `No logs yet`, or `To be determined`.
    - Create `.codex-project.json` as valid JSON with `schema` set to
-     `codex_projects`, `version` set to `2`, `project_name` set to the approved
-     project name, `project_folder` set to the approved folder name, and
-     `created_at` set to `{YYYY-MM-DD}`.
+     `codex_projects`, `schema_version` set to `2`, `project_name` set to the
+     approved project name, `project_folder` set to the approved folder name,
+     and `created_at` set to `{YYYY-MM-DD}`.
    - Do not omit required JSON keys, Markdown sections, or required tables.
    - Set `plans/STATUS.md` to the Intake phase and preserve the required
      resume headings: `Last Updated`, `Current State`, `Last Completed`,

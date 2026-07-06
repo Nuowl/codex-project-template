@@ -1,6 +1,6 @@
 # Codex Project Manager
 
-현재 패치 버전은 `Version4_260706`입니다. 자세한 변경사항은
+현재 패치 버전은 `Version4_260706`입니다.  자세한 변경사항은
 [PATH.md](PATH.md)를 확인하세요.
 
 V4부터 GitHub에서 갱신하는 관리 도구와 사용자가 생성한 프로젝트를

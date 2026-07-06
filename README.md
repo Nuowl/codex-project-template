@@ -231,6 +231,8 @@ cd ..
 python3 ./codex_project_manager/setup.py
 ```
 
+- 해당 명령을 입력 시 개별적으로 수정한 manager 내용이 사라진다는 점을 유의하십시오. 
+
 ### `Legacy workspace not found`가 나올 때
 
 레거시 전환 명령은 기존 `codex_projects` 폴더 안이 아니라, 그 바깥의
@@ -241,6 +243,9 @@ python3 ./codex_project_manager/setup.py
 ├─ codex_project_manager/    GitHub에서 갱신하는 도구
 └─ codex_projects/           사용자 프로젝트 보관 폴더
 ```
+
+예를 들어 기존 프로젝트 폴더가 `{parent}/codex_projects`라면, 터미널 위치는
+`{parent}`여야 합니다.
 
 ### manager 업데이트가 거부될 때
 

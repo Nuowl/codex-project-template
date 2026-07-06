@@ -3,6 +3,8 @@
 이 문서는 README보다 깊은 운영 기준을 다룹니다. 일반 사용자는 README만
 보면 됩니다.
 
+---
+
 ## 현재 구조
 
 ```text
@@ -15,22 +17,26 @@
 - workspace에는 사용자가 만든 프로젝트만 둡니다.
 - manager 업데이트는 workspace 안의 프로젝트 파일을 수정하지 않습니다.
 
+---
+
 ## 문서 역할
 
-| 파일 | 역할 |
-| --- | --- |
-| `README.md` | 설치, 업데이트, 빠른 사용법 |
-| `LEGACY_MIGRATION.md` | 자동화 적용 전 설치를 최신 구조로 전환 |
-| `AGENTS_REQ.md` | `setup.py`가 Codex 지침에 설치하는 원본 |
-| `PROJECT_CREATION_RUNBOOK.md` | `새 프로젝트 생성` 질문과 승인 흐름 |
-| `PROJECT_FILE_SKELETONS.md` | 새 프로젝트 필수 파일의 실제 skeleton |
-| `PROJECT_TEMPLATE_PROMPT.md` | 구조 설계 의도와 감사 기준 |
-| `PATH.md` | 버전별 변경 요약 |
-| `setup.py` | manager 설치, 업데이트, 지침 설치 |
-| `migrate_projects.py` | 기존 프로젝트 구조 점검과 갱신 |
+| 파일                            | 역할                                      |
+| ------------------------------- | ----------------------------------------- |
+| `README.md`                   | 설치, 업데이트, 빠른 사용법               |
+| `LEGACY_MIGRATION.md`         | 자동화 적용 전 설치를 최신 구조로 전환    |
+| `AGENTS_REQ.md`               | `setup.py`가 Codex 지침에 설치하는 원본 |
+| `PROJECT_CREATION_RUNBOOK.md` | `새 프로젝트 생성` 질문과 승인 흐름     |
+| `PROJECT_FILE_SKELETONS.md`   | 새 프로젝트 필수 파일의 실제 skeleton     |
+| `PROJECT_TEMPLATE_PROMPT.md`  | 구조 설계 의도와 감사 기준                |
+| `PATH.md`                     | 버전별 변경 요약                          |
+| `setup.py`                    | manager 설치, 업데이트, 지침 설치         |
+| `migrate_projects.py`         | 기존 프로젝트 구조 점검과 갱신            |
 
 평소 실행 흐름에서는 `PROJECT_TEMPLATE_PROMPT.md`를 읽지 않습니다.
 새 프로젝트 생성은 runbook이 담당하고, 파일 내용은 skeleton이 담당합니다.
+
+---
 
 ## 자동화 흐름
 
@@ -54,6 +60,8 @@
 프로젝트 갱신은 사용자가 `migrate_projects.py`를 명시적으로 실행해야
 합니다.
 
+---
+
 ## 레거시 전환
 
 자동화 적용 전 `codex_projects` 폴더에는 템플릿 파일과 프로젝트 폴더가
@@ -64,6 +72,8 @@
 
 자세한 명령은 `LEGACY_MIGRATION.md`가 기준입니다.
 
+---
+
 ## 프로젝트 마이그레이션
 
 `migrate_projects.py` 기본 실행은 미리보기입니다. 실제 변경은 `--apply`
@@ -73,25 +83,62 @@
 
 - 기존 Markdown을 skeleton으로 덮어쓰지 않습니다.
 - 누락된 폴더, 누락된 파일, 필수 heading만 추가합니다.
-- 변경 전 파일은 `.codex-project-backups/`에 저장합니다.
-- 실행 결과는 `.codex-migration-reports/`에 기록합니다.
+- 적용 중 변경 전 파일은 `.codex-project-backups/`에 임시 저장합니다.
+- 성공 후 사용자가 동의하면 마이그레이션 백업과 레거시 템플릿 백업을
+  삭제합니다.
 - symlink project, 잘못된 `.codex-project.json`, workspace 밖 경로는
   conflict로 처리합니다.
 
+마이그레이션 판정 종류:
+
+| 판정 | 의미 | 처리 |
+| --- | --- | --- |
+| `current` | 최신 manager 기준과 일치하는 프로젝트 | 변경하지 않음 |
+| `legacy` | 자동 보완 가능한 차이가 있는 프로젝트 | 변경 개수를 표시하고 `--apply`에서 필요한 항목만 추가 |
+| `unrelated` | Codex 프로젝트가 아닌 폴더 | 변경하지 않음 |
+| `conflicting` | 자동 보완이 위험한 폴더 | 변경하지 않고 오류 표시 |
+
+판정 기준은 아래 순서로 적용합니다.
+
+| 판정 | 조건 |
+| --- | --- |
+| `current` | 프로젝트 식별 정보, schema number, `manager_version`, 필수 폴더·파일, `STATUS.md` heading이 모두 현재 manager 기준과 일치 |
+| `legacy` | 현재 manager 기준과 다른 항목이 있지만 자동 보완 가능 |
+| `conflicting` | 자동 보완이 위험하거나 identity가 잘못됨 |
+| `unrelated` | 프로젝트 식별 근거가 없음 |
+
+`legacy` 예시는 다음과 같습니다.
+
+- `.codex-project.json`은 없지만 `NOTES.md`가 있음
+- 예전 identity 키 `version`이 남아 있어 `schema_version`으로 바꿔야 함
+- `manager_version`이 현재 manager와 다름
+- 필수 폴더, 필수 파일, `plans/STATUS.md` 필수 heading이 누락됨
+
+`conflicting` 예시는 다음과 같습니다.
+
+- `plans/STATUS.md`만 있고 `NOTES.md`가 없음
+- symlink project
+- 잘못된 identity
+- 지원 schema number보다 높은 값
+
+---
+
 ## 프로젝트 구조
 
-| 경로 | 역할 |
-| --- | --- |
-| `.codex-project.json` | 프로젝트 식별 파일 |
-| `NOTES.md` | 프로젝트 개요와 주요 링크 |
-| `attachments/` | 문서형 입력 자료 |
-| `screenshots/` | 이미지형 입력 자료 |
-| `configs/` | 분석, 요약, 변환 결과 |
-| `presentations/` | 발표 자료 |
-| `logs/` | 작업 기록 |
-| `plans/` | 요구사항, 상태, 추적성, 결정 기록 |
+| 경로                    | 역할                              |
+| ----------------------- | --------------------------------- |
+| `.codex-project.json` | 프로젝트 식별 파일                |
+| `NOTES.md`            | 프로젝트 개요와 주요 링크         |
+| `attachments/`        | 문서형 입력 자료                  |
+| `screenshots/`        | 이미지형 입력 자료                |
+| `configs/`            | 분석, 요약, 변환 결과             |
+| `presentations/`      | 발표 자료                         |
+| `logs/`               | 작업 기록                         |
+| `plans/`              | 요구사항, 상태, 추적성, 결정 기록 |
 
 `.codex-project.json`의 `project_folder`는 실제 폴더명과 일치해야 합니다.
+
+---
 
 ## 프로젝트 작업 루프
 
@@ -129,16 +176,20 @@
 - `Next Action`
 - `Blocked By`
 
+---
+
 ## 출력 위치
 
-| 출력 | 위치 |
-| --- | --- |
-| 일반 분석, 요약, 변환 결과 | `configs/{group}/` |
-| 발표 자료 | `presentations/{group}/` |
-| 작업 로그 | `logs/{group}/` |
+| 출력                       | 위치                       |
+| -------------------------- | -------------------------- |
+| 일반 분석, 요약, 변환 결과 | `configs/{group}/`       |
+| 발표 자료                  | `presentations/{group}/` |
+| 작업 로그                  | `logs/{group}/`          |
 
 기본 group 기준은 주제, 챕터, 모듈입니다. 기준이 애매하면
 `YYYY-MM-DD-topic` 형식을 사용합니다.
+
+---
 
 ## 토큰 절약 근거
 
@@ -157,6 +208,8 @@
 - 정확도, 안전, 사용자에게 보이는 산출물이 걸린 판단은 요약만 믿지
   않고 원문이나 실제 소스 섹션을 다시 확인합니다.
 - 검증은 토큰 절약을 이유로 생략하지 않습니다.
+
+---
 
 ## 다른 에이전트로 적용할 때
 
@@ -191,6 +244,8 @@ Create projects only under <CODEX_PROJECTS_WORKSPACE_ROOT>.
 `PROJECT_CREATION_RUNBOOK.md`, `PROJECT_FILE_SKELETONS.md`의 사용자-facing
 문장을 함께 번역해야 합니다. 경로 placeholder와 파일명은 번역하지
 마세요.
+
+---
 
 ## 유지보수 체크
 

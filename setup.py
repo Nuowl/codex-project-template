@@ -28,18 +28,22 @@ from manager_common import (
 
 OFFICIAL_REMOTE = "https://github.com/Nuowl/codex-project-template.git"
 LEGACY_TEMPLATE_FILES = (
+    ".gitignore",
     "AGENTS_REQ.md",
+    "LEGACY_MIGRATION.md",
     "OPERATING_GUIDE.md",
     "PATH.md",
     "PROJECT_CREATION_RUNBOOK.md",
     "PROJECT_FILE_SKELETONS.md",
     "PROJECT_TEMPLATE_PROMPT.md",
     "README.md",
+    "V4_DESIGN.md",
     "install_agents.py",
     "manager_common.py",
     "migrate_projects.py",
     "setup.py",
 )
+LEGACY_TEMPLATE_DIRS = ("tests",)
 
 
 def parse_args() -> argparse.Namespace:
@@ -145,11 +149,17 @@ def update_manager(manager_root: Path, argv: list[str]) -> bool:
 
 
 def legacy_files(workspace: Path) -> list[Path]:
-    return [
+    files = [
         workspace / name
         for name in LEGACY_TEMPLATE_FILES
         if (workspace / name).is_file()
     ]
+    dirs = [
+        workspace / name
+        for name in LEGACY_TEMPLATE_DIRS
+        if (workspace / name).is_dir() and not (workspace / name).is_symlink()
+    ]
+    return files + dirs
 
 
 def adopt_legacy_workspace(workspace: Path) -> Path:

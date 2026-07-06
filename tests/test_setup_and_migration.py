@@ -105,15 +105,29 @@ class SetupAndMigrationTests(unittest.TestCase):
             (workspace / "AGENTS_REQ.md").write_text(
                 "legacy instructions\n", encoding="utf-8"
             )
+            (workspace / "LEGACY_MIGRATION.md").write_text(
+                "legacy guide\n", encoding="utf-8"
+            )
+            (workspace / ".gitignore").write_text("legacy ignores\n", encoding="utf-8")
+            (workspace / "tests").mkdir()
+            (workspace / "tests" / "test_legacy.py").write_text(
+                "legacy tests\n", encoding="utf-8"
+            )
             (workspace / "user-root-note.txt").write_text("keep\n", encoding="utf-8")
 
             backup = adopt_legacy_workspace(workspace)
 
             self.assertTrue((backup / "README.md").is_file())
             self.assertTrue((backup / "AGENTS_REQ.md").is_file())
+            self.assertTrue((backup / "LEGACY_MIGRATION.md").is_file())
+            self.assertTrue((backup / ".gitignore").is_file())
+            self.assertTrue((backup / "tests" / "test_legacy.py").is_file())
             self.assertTrue((project / "NOTES.md").is_file())
             self.assertTrue((workspace / "user-root-note.txt").is_file())
             self.assertFalse((workspace / "README.md").exists())
+            self.assertFalse((workspace / "LEGACY_MIGRATION.md").exists())
+            self.assertFalse((workspace / ".gitignore").exists())
+            self.assertFalse((workspace / "tests").exists())
 
     def test_migration_preserves_existing_content_and_creates_backup(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -150,7 +164,9 @@ class SetupAndMigrationTests(unittest.TestCase):
             identity = json.loads(
                 (project / ".codex-project.json").read_text(encoding="utf-8")
             )
-            self.assertEqual(identity["version"], 2)
+            self.assertEqual(identity["schema_version"], 2)
+            self.assertNotIn("version", identity)
+            self.assertEqual(identity["manager_version"], "V4_260706")
             self.assertTrue((project / "plans" / "REQUIREMENTS.md").is_file())
             self.assertEqual(
                 (backup_root / "Legacy_Project" / "plans" / "STATUS.md").read_text(
@@ -158,6 +174,28 @@ class SetupAndMigrationTests(unittest.TestCase):
                 ),
                 original_status,
             )
+
+    def test_notes_only_project_is_migratable(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / "Notes_Only_Project"
+            project.mkdir()
+            original_notes = "# Existing notes\n\nDo not replace this content.\n"
+            (project / "NOTES.md").write_text(original_notes, encoding="utf-8")
+
+            plan = inspect_project(project)
+            self.assertEqual(plan.classification, "legacy")
+            self.assertIn("create file plans/STATUS.md", plan.actions)
+
+            backup_root = root / "backups"
+            backup_root.mkdir()
+            apply_plan(plan, MANAGER_ROOT, backup_root)
+
+            self.assertEqual(
+                (project / "NOTES.md").read_text(encoding="utf-8"), original_notes
+            )
+            self.assertTrue((project / "plans" / "STATUS.md").is_file())
+            self.assertTrue((project / ".codex-project.json").is_file())
 
     def test_conflicting_identity_is_not_migratable(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -167,7 +205,7 @@ class SetupAndMigrationTests(unittest.TestCase):
                 json.dumps(
                     {
                         "schema": "codex_projects",
-                        "version": 1,
+                        "schema_version": 1,
                         "project_name": "Example",
                         "project_folder": "Wrong_Name",
                         "created_at": "2026-06-22",
@@ -177,7 +215,40 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             plan = inspect_project(project)
             self.assertEqual(plan.classification, "conflicting")
-            self.assertIn("does not match", plan.error or "")
+
+    def test_legacy_version_key_is_renamed_to_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            project = root / "Legacy_Key_Project"
+            project.mkdir()
+            (project / ".codex-project.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "codex_projects",
+                        "version": 2,
+                        "project_name": "Legacy Key Project",
+                        "project_folder": "Legacy_Key_Project",
+                        "created_at": "2026-07-06",
+                        "manager_version": "V4_260622",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            plan = inspect_project(project)
+            self.assertEqual(plan.classification, "legacy")
+            self.assertIn("set schema_version 2", plan.actions)
+
+            backup_root = root / "backups"
+            backup_root.mkdir()
+            apply_plan(plan, MANAGER_ROOT, backup_root)
+
+            identity = json.loads(
+                (project / ".codex-project.json").read_text(encoding="utf-8")
+            )
+            self.assertNotIn("version", identity)
+            self.assertEqual(identity["schema_version"], 2)
+            self.assertEqual(identity["manager_version"], "V4_260706")
 
     def test_project_symlink_is_conflicting(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -221,6 +292,9 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(setup_result.returncode, 0, setup_result.stderr)
             self.assertEqual(self.project_snapshot(project), before_adoption)
+            self.assertTrue(
+                list(root.glob(f"{workspace.name}_legacy_template_backup_*"))
+            )
 
             dry_run = self.run_command(
                 str(MANAGER_ROOT / "migrate_projects.py"),
@@ -230,7 +304,19 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(dry_run.returncode, 0, dry_run.stderr)
             self.assertIn("Preview: 1 project(s)", dry_run.stdout)
+            self.assertIn("Legacy Project: needs update", dry_run.stdout)
+            self.assertNotIn("create file", dry_run.stdout)
             self.assertEqual(self.project_snapshot(project), before_adoption)
+
+            verbose_dry_run = self.run_command(
+                str(MANAGER_ROOT / "migrate_projects.py"),
+                "--all",
+                "--verbose",
+                "--config-file",
+                str(config),
+            )
+            self.assertEqual(verbose_dry_run.returncode, 0, verbose_dry_run.stderr)
+            self.assertIn("create file", verbose_dry_run.stdout)
 
             apply = self.run_command(
                 str(MANAGER_ROOT / "migrate_projects.py"),
@@ -241,6 +327,11 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(apply.returncode, 0, apply.stderr)
             self.assertTrue((project / ".codex-project.json").is_file())
+            self.assertTrue((workspace / ".codex-project-backups").exists())
+            self.assertFalse((workspace / ".codex-migration-reports").exists())
+            self.assertTrue(
+                list(root.glob(f"{workspace.name}_legacy_template_backup_*"))
+            )
             after_migration = self.project_snapshot(project)
 
             repeat_setup = self.run_command(
@@ -253,6 +344,15 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(repeat_setup.returncode, 0, repeat_setup.stderr)
             self.assertEqual(self.project_snapshot(project), after_migration)
+
+            current_check = self.run_command(
+                str(MANAGER_ROOT / "migrate_projects.py"),
+                "--all",
+                "--config-file",
+                str(config),
+            )
+            self.assertEqual(current_check.returncode, 0, current_check.stderr)
+            self.assertIn("Legacy Project: up to date", current_check.stdout)
 
 
 if __name__ == "__main__":

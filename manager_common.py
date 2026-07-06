@@ -13,7 +13,7 @@ import tempfile
 from typing import Any
 
 
-MANAGER_VERSION = "V4_260622"
+MANAGER_VERSION = "V4_260706"
 CONFIG_SCHEMA = "codex_project_manager"
 CONFIG_VERSION = 1
 PROJECT_SCHEMA = "codex_projects"

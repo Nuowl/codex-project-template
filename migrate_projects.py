@@ -57,7 +57,7 @@ STATUS_HEADINGS = (
 class ProjectPlan:
     root: Path
     classification: str
-    version: int | None = None
+    schema_version: int | None = None
     project_name: str | None = None
     actions: list[str] = field(default_factory=list)
     error: str | None = None
@@ -72,6 +72,9 @@ def parse_args() -> argparse.Namespace:
     selection.add_argument("--project", help="Inspect one immediate workspace child")
     parser.add_argument(
         "--apply", action="store_true", help="Apply the planned migrations"
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Show detailed planned actions"
     )
     parser.add_argument("--config-file", type=Path, default=default_config_file())
     parser.add_argument(
@@ -136,28 +139,39 @@ def inspect_project(project: Path) -> ProjectPlan:
                 raise ManagerError(
                     f"project_folder {identity.get('project_folder')!r} does not match {project.name!r}"
                 )
-            version = identity.get("version")
-            if isinstance(version, bool) or not isinstance(version, int) or version < 1:
-                raise ManagerError(f"Invalid project version: {version!r}")
-            if version > PROJECT_SCHEMA_VERSION:
+            schema_version = identity.get("schema_version", identity.get("version"))
+            if (
+                isinstance(schema_version, bool)
+                or not isinstance(schema_version, int)
+                or schema_version < 1
+            ):
+                raise ManagerError(f"Invalid schema_version: {schema_version!r}")
+            if schema_version > PROJECT_SCHEMA_VERSION:
                 raise ManagerError(
-                    f"Project version {version} is newer than supported {PROJECT_SCHEMA_VERSION}"
+                    f"Project schema_version {schema_version} is newer than supported {PROJECT_SCHEMA_VERSION}"
                 )
             project_name = identity.get("project_name")
             if not isinstance(project_name, str) or not project_name:
                 raise ManagerError("project_name must be a nonempty string")
+            manager_version = identity.get("manager_version")
         except ManagerError as exc:
             return ProjectPlan(project, "conflicting", error=str(exc))
-        classification = "current" if version == PROJECT_SCHEMA_VERSION else "legacy"
-        plan = ProjectPlan(project, classification, version, project_name)
-    elif notes.is_file() and status.is_file():
+        classification = (
+            "current" if schema_version == PROJECT_SCHEMA_VERSION else "legacy"
+        )
+        plan = ProjectPlan(project, classification, schema_version, project_name)
+        if "schema_version" not in identity or "version" in identity:
+            plan.actions.append(f"set schema_version {PROJECT_SCHEMA_VERSION}")
+        if manager_version != MANAGER_VERSION:
+            plan.actions.append(f"set manager version {MANAGER_VERSION}")
+    elif notes.is_file():
         plan = ProjectPlan(project, "legacy", 0, project.name)
         plan.actions.append("create .codex-project.json")
-    elif notes.exists() or status.exists():
+    elif status.exists():
         return ProjectPlan(
             project,
             "conflicting",
-            error="Only one of NOTES.md and plans/STATUS.md exists",
+            error="plans/STATUS.md exists without NOTES.md",
         )
     else:
         return ProjectPlan(project, "unrelated")
@@ -196,8 +210,8 @@ def inspect_project(project: Path) -> ProjectPlan:
             project, "conflicting", error=f"Unable to read STATUS.md: {exc}"
         )
 
-    if plan.version != PROJECT_SCHEMA_VERSION:
-        plan.actions.append(f"set project structure version {PROJECT_SCHEMA_VERSION}")
+    if plan.schema_version and plan.schema_version != PROJECT_SCHEMA_VERSION:
+        plan.actions.append(f"set schema_version {PROJECT_SCHEMA_VERSION}")
     if plan.actions and plan.classification == "current":
         plan.classification = "legacy"
     return plan
@@ -242,7 +256,8 @@ def _identity_for(plan: ProjectPlan) -> dict[str, Any]:
             "project_folder": plan.root.name,
             "created_at": date.today().isoformat(),
         }
-    identity["version"] = PROJECT_SCHEMA_VERSION
+    identity.pop("version", None)
+    identity["schema_version"] = PROJECT_SCHEMA_VERSION
     identity["manager_version"] = MANAGER_VERSION
     identity["migrated_at"] = date.today().isoformat()
     return identity
@@ -328,11 +343,73 @@ def _workspace_and_manager(args: argparse.Namespace) -> tuple[Path, Path]:
 
 
 def _print_plan(plan: ProjectPlan) -> None:
-    print(f"[{plan.classification}] {plan.root.name}")
+    print(_plan_summary(plan))
+    if plan.error:
+        print(f"  error: {plan.error}")
+
+
+def _print_plan_verbose(plan: ProjectPlan) -> None:
+    print(_plan_summary(plan))
     if plan.error:
         print(f"  error: {plan.error}")
     for action in plan.actions:
         print(f"  - {action}")
+
+
+def _legacy_backup_dirs(workspace: Path) -> list[Path]:
+    pattern = f"{workspace.name}_legacy_template_backup_*"
+    return sorted(
+        path
+        for path in workspace.parent.glob(pattern)
+        if path.is_dir() and not path.is_symlink()
+    )
+
+
+def _remove_if_exists(path: Path) -> None:
+    if not path.exists():
+        return
+    if path.is_dir() and not path.is_symlink():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
+
+
+def _cleanup_backup_paths(workspace: Path) -> list[Path]:
+    removed: list[Path] = []
+    candidates = [
+        workspace / ".codex-project-backups",
+        workspace / ".codex-migration-reports",
+    ]
+    candidates.extend(_legacy_backup_dirs(workspace))
+    for path in candidates:
+        if path.exists():
+            _remove_if_exists(path)
+            removed.append(path)
+    return removed
+
+
+def _should_cleanup_backups() -> bool:
+    if not sys.stdin.isatty():
+        return False
+
+    print("Delete migration backup files now?")
+    print("1. Yes")
+    print("2. No")
+    answer = input("Select [1/2, default 2]: ").strip().lower()
+    return answer in {"1", "y", "yes"}
+
+
+def _plan_summary(plan: ProjectPlan) -> str:
+    if plan.classification == "legacy" and plan.actions:
+        return (
+            f"[{plan.classification}] {plan.root.name}: "
+            f"needs update, {len(plan.actions)} changes"
+        )
+    if plan.classification in {"unrelated", "conflicting"}:
+        return f"[{plan.classification}] {plan.root.name}"
+    if plan.classification == "current":
+        return f"[{plan.classification}] {plan.root.name}: up to date"
+    return f"[{plan.classification}] {plan.root.name}"
 
 
 def main() -> int:
@@ -360,7 +437,10 @@ def main() -> int:
 
         plans = [inspect_project(project) for project in projects]
         for plan in plans:
-            _print_plan(plan)
+            if args.verbose:
+                _print_plan_verbose(plan)
+            else:
+                _print_plan(plan)
 
         conflicts = [plan for plan in plans if plan.classification == "conflicting"]
         migratable = [
@@ -379,48 +459,25 @@ def main() -> int:
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_root = workspace / ".codex-project-backups" / stamp
         backup_root.mkdir(parents=True, exist_ok=False)
-        results: list[dict[str, Any]] = []
         failures = 0
         for plan in migratable:
             try:
                 apply_plan(plan, manager_root, backup_root)
-                results.append(
-                    {
-                        "project": plan.root.name,
-                        "status": "migrated",
-                        "actions": plan.actions,
-                    }
-                )
                 print(f"Migrated: {plan.root.name}")
             except ManagerError as exc:
                 failures += 1
-                results.append(
-                    {
-                        "project": plan.root.name,
-                        "status": "failed",
-                        "actions": plan.actions,
-                        "error": str(exc),
-                    }
-                )
                 print(f"Migration failed: {plan.root.name}: {exc}", file=sys.stderr)
 
-        report_dir = workspace / ".codex-migration-reports"
-        report_dir.mkdir(parents=True, exist_ok=True)
-        report_file = report_dir / f"{stamp}.json"
-        atomic_write_json(
-            report_file,
-            {
-                "manager_version": MANAGER_VERSION,
-                "project_schema_version": PROJECT_SCHEMA_VERSION,
-                "workspace": str(workspace),
-                "backup_root": str(backup_root),
-                "projects": results,
-            },
-            backup=False,
-        )
-        print(f"Backup: {backup_root}")
-        print(f"Report: {report_file}")
-        return 2 if failures else 0
+        if failures:
+            print(f"Backup: {backup_root}")
+            return 2
+
+        if _should_cleanup_backups():
+            removed = _cleanup_backup_paths(workspace)
+            print(f"Deleted backup path(s): {len(removed)}")
+        else:
+            print(f"Backup: {backup_root}")
+        return 0
     except (ManagerError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1

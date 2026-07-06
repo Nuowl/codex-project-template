@@ -235,8 +235,7 @@ python3 ./codex_project_manager/setup.py
 
 ### `Legacy workspace not found`가 나올 때
 
-레거시 전환 명령은 기존 `codex_projects` 폴더 안이 아니라, 그 바깥의
-상위 폴더에서 실행해야 합니다.
+레거시 전환 명령은 기존 `codex_projects` 폴더 안이 아니라, 그 바깥의 상위 폴더에서 실행해야 합니다.
 
 ```text
 {parent}/
@@ -244,8 +243,7 @@ python3 ./codex_project_manager/setup.py
 └─ codex_projects/           사용자 프로젝트 보관 폴더
 ```
 
-예를 들어 기존 프로젝트 폴더가 `{parent}/codex_projects`라면, 터미널 위치는
-`{parent}`여야 합니다.
+예를 들어 기존 프로젝트 폴더가 `{parent}/codex_projects`라면, 터미널 위치는 `{parent}`여야 합니다.
 
 ### manager 업데이트가 거부될 때
 
@@ -256,15 +254,13 @@ manager의 Git 추적 파일에 로컬 변경이 있거나, `origin`이 공식 G
 ### workspace 경로를 바꾸고 싶을 때
 
 `~/.codex/codex-projects.json`의 경로를 직접 수정하지 마세요.  
-기존
-workspace를 다른 위치로 옮기는 절차는 아직 자동화되어 있지 않습니다.  
+기존 workspace를 다른 위치로 옮기는 절차는 아직 자동화되어 있지 않습니다.  
 프로젝트 폴더를 백업한 뒤 새 위치에 다시 설정해야 합니다.
 
 ### 한글 인코딩 오류가 날 때
 
 manager는 설정과 지침을 UTF-8로 명시적으로 읽고 씁니다.  
-기존 `AGENTS.md`가 CP949 또는 UTF-16이면 안전을 위해 덮어쓰지 않고 오류를
-발생시킵니다.  
+기존 `AGENTS.md`가 CP949 또는 UTF-16이면 안전을 위해 덮어쓰지 않고 오류를 발생시킵니다.  
 기존 파일을 UTF-8로 변환한 뒤 다시 실행하세요.
 
 ---

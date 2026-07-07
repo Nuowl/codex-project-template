@@ -395,7 +395,10 @@ def _should_cleanup_backups() -> bool:
     print("Delete migration backup files now?")
     print("1. Yes")
     print("2. No")
-    answer = input("Select [1/2, default 2]: ").strip().lower()
+    try:
+        answer = input("Select [1/2, default 2]: ").strip().lower()
+    except EOFError:
+        return False
     return answer in {"1", "y", "yes"}
 
 

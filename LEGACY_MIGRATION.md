@@ -1,17 +1,15 @@
 # Legacy Migration Guide
 
-이 문서는 자동화가 적용되기 전의 `codex_projects`를 최신 구조로 옮기는
-가이드입니다.
+이 문서는 자동화가 적용되기 전의 `codex_projects`를 최신 구조로 이전하는 가이드입니다.  
 
-기존 `codex_projects` 폴더를 삭제하거나 프로젝트를 밖으로 옮기지 마세요.
+기존 `codex_projects` 폴더를 삭제하거나 프로젝트를 밖으로 옮기지 마세요.  
 작업 중인 프로젝트 폴더는 그대로 둡니다.
 
 ---
 
 ## 1. 기존 지침 정리
 
-`AGENTS.md`에서 예전에 직접 붙여 넣은 `codex_projects` 프로젝트 지침만
-삭제하세요.
+`AGENTS.md`에서 예전에 직접 붙여 넣은 `codex_projects` 프로젝트 지침만 삭제하세요.  
 
 개인적으로 작성한 지침은 따로 저장해 두거나 그대로 남겨둡니다.
 
@@ -41,8 +39,7 @@ git clone https://github.com/Nuowl/codex-project-template.git ./codex_project_ma
 └─ codex_projects/           기존 프로젝트 폴더
 ```
 
-`codex_project_manager`의 `.git` 폴더는 업데이트에 필요하므로 삭제하지
-마세요.
+`codex_project_manager`의 `.git` 폴더는 업데이트에 필요하므로 삭제하지 마세요.
 
 ---
 
@@ -60,12 +57,10 @@ Linux/macOS:
 python3 ./codex_project_manager/setup.py --workspace ./codex_projects --adopt-legacy
 ```
 
-이 명령을 실행하면 작업 중인 프로젝트 폴더를 제외한 구버전 템플릿
-구성 파일을 정리하고, 최신 Codex 관리 지침을 설치합니다.
+명령을 실행 시 작업 중인 프로젝트 폴더를 제외한 구버전 구성 파일을 정리하고, 최신 Codex 관리 지침을 설치합니다.  
 
-정리된 템플릿 파일은 상위 폴더의
-`codex_projects_legacy_template_backup_날짜` 폴더에 보관됩니다. 문제가
-없으면 나중에 삭제해도 됩니다.
+정리된 구버전 템플릿 파일은 작업 중 임시 cleanup 폴더로 옮겨진 뒤 성공하면 즉시 삭제됩니다.  
+작업 중인 프로젝트 폴더와 사용자 루트 파일은 그대로 둡니다.
 
 ---
 
@@ -95,8 +90,8 @@ python3 ./codex_project_manager/migrate_projects.py --all
 Preview: 1 project(s) would be migrated
 ```
 
-- `[legacy]`: 최신 구조로 갱신할 프로젝트입니다.
-- `[unrelated]`: 프로젝트가 아닌 폴더입니다. 갱신하지 않습니다.
+- `[legacy]`: 최신 구조로 갱신할 프로젝트입니다.  
+- `[unrelated]`: 프로젝트가 아닌 폴더입니다. 갱신하지 않습니다.  
 - `changes`: 생성되거나 보완될 항목 수입니다.
 
 ### 4-2. 상세 변경 목록 확인
@@ -131,8 +126,8 @@ Linux/macOS:
 python3 ./codex_project_manager/migrate_projects.py --all --apply
 ```
 
-적용이 끝나면 백업 파일을 삭제할지 선택할 수 있습니다.  
-`1`을 선택하면 레거시 템플릿 백업과 마이그레이션 백업을 삭제합니다.  
+적용이 끝나면 마이그레이션 백업 파일을 삭제할지 선택할 수 있습니다.  
+`1`을 선택하면 마이그레이션 백업과 레거시 템플릿 백업을 삭제합니다.  
 `2`를 선택하면 백업을 남깁니다.
 
 ---

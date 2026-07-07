@@ -20,6 +20,7 @@ class SetupAndMigrationTests(unittest.TestCase):
             [sys.executable, "-B", *args],
             text=True,
             encoding="utf-8",
+            errors="replace",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
@@ -94,7 +95,7 @@ class SetupAndMigrationTests(unittest.TestCase):
             self.assertFalse(config.exists())
             self.assertFalse(agents.exists())
 
-    def test_legacy_adoption_moves_only_known_root_files(self) -> None:
+    def test_legacy_adoption_removes_only_known_root_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             workspace = root / "codex_projects"
@@ -115,13 +116,15 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             (workspace / "user-root-note.txt").write_text("keep\n", encoding="utf-8")
 
-            backup = adopt_legacy_workspace(workspace)
+            removed = adopt_legacy_workspace(workspace)
 
-            self.assertTrue((backup / "README.md").is_file())
-            self.assertTrue((backup / "AGENTS_REQ.md").is_file())
-            self.assertTrue((backup / "LEGACY_MIGRATION.md").is_file())
-            self.assertTrue((backup / ".gitignore").is_file())
-            self.assertTrue((backup / "tests" / "test_legacy.py").is_file())
+            self.assertEqual(removed, 5)
+            self.assertFalse(
+                list(root.glob(f"{workspace.name}_legacy_template_backup_*"))
+            )
+            self.assertFalse(
+                list(root.glob(f"{workspace.name}_legacy_template_cleanup_*"))
+            )
             self.assertTrue((project / "NOTES.md").is_file())
             self.assertTrue((workspace / "user-root-note.txt").is_file())
             self.assertFalse((workspace / "README.md").exists())
@@ -256,7 +259,12 @@ class SetupAndMigrationTests(unittest.TestCase):
             target = root / "target"
             target.mkdir()
             project = root / "linked-project"
-            project.symlink_to(target, target_is_directory=True)
+            try:
+                project.symlink_to(target, target_is_directory=True)
+            except OSError as exc:
+                if getattr(exc, "winerror", None) == 1314:
+                    self.skipTest("Windows symlink privilege is unavailable")
+                raise
 
             plan = inspect_project(project)
 
@@ -292,8 +300,12 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(setup_result.returncode, 0, setup_result.stderr)
             self.assertEqual(self.project_snapshot(project), before_adoption)
-            self.assertTrue(
+            self.assertIn("Legacy template files removed: 1", setup_result.stdout)
+            self.assertFalse(
                 list(root.glob(f"{workspace.name}_legacy_template_backup_*"))
+            )
+            self.assertFalse(
+                list(root.glob(f"{workspace.name}_legacy_template_cleanup_*"))
             )
 
             dry_run = self.run_command(
@@ -329,8 +341,11 @@ class SetupAndMigrationTests(unittest.TestCase):
             self.assertTrue((project / ".codex-project.json").is_file())
             self.assertTrue((workspace / ".codex-project-backups").exists())
             self.assertFalse((workspace / ".codex-migration-reports").exists())
-            self.assertTrue(
+            self.assertFalse(
                 list(root.glob(f"{workspace.name}_legacy_template_backup_*"))
+            )
+            self.assertFalse(
+                list(root.glob(f"{workspace.name}_legacy_template_cleanup_*"))
             )
             after_migration = self.project_snapshot(project)
 

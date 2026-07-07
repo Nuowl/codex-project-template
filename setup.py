@@ -162,33 +162,34 @@ def legacy_files(workspace: Path) -> list[Path]:
     return files + dirs
 
 
-def adopt_legacy_workspace(workspace: Path) -> Path:
+def adopt_legacy_workspace(workspace: Path) -> int:
     candidates = legacy_files(workspace)
     if not candidates:
         raise ManagerError(f"No known legacy template files found in {workspace}")
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup = workspace.parent / f"{workspace.name}_legacy_template_backup_{stamp}"
-    if backup.exists():
-        raise ManagerError(f"Legacy backup path already exists: {backup}")
+    staging = workspace.parent / f"{workspace.name}_legacy_template_cleanup_{stamp}"
+    if staging.exists():
+        raise ManagerError(f"Legacy cleanup path already exists: {staging}")
 
     moved: list[tuple[Path, Path]] = []
     try:
-        backup.mkdir(parents=False)
+        staging.mkdir(parents=False)
         for source in candidates:
-            destination = backup / source.name
+            destination = staging / source.name
             shutil.move(str(source), str(destination))
             moved.append((source, destination))
+        shutil.rmtree(staging)
     except Exception as exc:
         for source, destination in reversed(moved):
             if destination.exists() and not source.exists():
                 shutil.move(str(destination), str(source))
-        if backup.exists() and not any(backup.iterdir()):
-            backup.rmdir()
+        if staging.exists() and not any(staging.iterdir()):
+            staging.rmdir()
         raise ManagerError(
             f"Legacy adoption failed and was rolled back: {exc}"
         ) from exc
-    return backup
+    return len(candidates)
 
 
 def _configured_paths(
@@ -266,8 +267,8 @@ def main() -> int:
         if args.adopt_legacy:
             if not workspace.is_dir():
                 raise ManagerError(f"Legacy workspace not found: {workspace}")
-            backup = adopt_legacy_workspace(workspace)
-            print(f"Legacy template backup: {backup}")
+            removed = adopt_legacy_workspace(workspace)
+            print(f"Legacy template files removed: {removed}")
         else:
             workspace.mkdir(parents=True, exist_ok=True)
 

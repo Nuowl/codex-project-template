@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 from migrate_projects import apply_plan, inspect_project
-from setup import adopt_legacy_workspace
+from setup import _is_git_checkout, adopt_legacy_workspace
 
 
 MANAGER_ROOT = Path(__file__).resolve().parents[1]
@@ -70,6 +70,48 @@ class SetupAndMigrationTests(unittest.TestCase):
             self.assertIn(str(workspace.resolve()), installed)
             self.assertNotIn("<CODEX_PROJECT", installed)
 
+    def test_separate_git_dir_is_recognized_as_git_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "source"
+            worktree = root / "worktree"
+            git_dir = root / "gitdir.git"
+
+            subprocess.run(["git", "init", source], check=True, stdout=subprocess.PIPE)
+            (source / "README.md").write_text("source\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(source),
+                    "-c",
+                    "user.name=Test",
+                    "-c",
+                    "user.email=test@example.invalid",
+                    "commit",
+                    "-m",
+                    "init",
+                ],
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "clone",
+                    "--no-checkout",
+                    "--separate-git-dir",
+                    str(git_dir),
+                    str(source),
+                    str(worktree),
+                ],
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+
+            self.assertTrue((worktree / ".git").is_file())
+            self.assertTrue(_is_git_checkout(worktree))
     def test_setup_requires_adoption_for_mixed_legacy_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

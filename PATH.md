@@ -71,4 +71,5 @@ Codex 지침 설치와 갱신을 개선한 버전입니다.
 - 레거시 마이그레이션 가이드의 최신 설정 적용에서  
   구버전 템플릿 파일을 백업으로 남기던 방식에서 성공 시 삭제하는 방식으로 변경
 - 이전 버전에서 남은 legacy template backup 폴더 정리 안내 보강
+- separate-git-dir 기반 manager를 Git checkout으로 인식하도록 setup 업데이트 개선
 - 비대화형 환경의 migration cleanup 입력 처리 안정화

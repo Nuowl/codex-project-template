@@ -98,8 +98,18 @@ def _normalized_remote(url: str) -> str:
     return normalized.lower()
 
 
+
+def _is_git_checkout(manager_root: Path) -> bool:
+    git_marker = manager_root / ".git"
+    if not (git_marker.is_dir() or git_marker.is_file()):
+        return False
+    try:
+        return _git(manager_root, "rev-parse", "--is-inside-work-tree") == "true"
+    except ManagerError:
+        return False
+
 def update_manager(manager_root: Path, argv: list[str]) -> bool:
-    if not (manager_root / ".git").is_dir():
+    if not _is_git_checkout(manager_root):
         print("Git update skipped: manager directory is not a Git checkout")
         return False
 

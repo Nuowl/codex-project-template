@@ -211,7 +211,7 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertEqual(identity["schema_version"], 2)
             self.assertNotIn("version", identity)
-            self.assertEqual(identity["manager_version"], "V4_260706")
+            self.assertEqual(identity["manager_version"], "V4.1_260707")
             self.assertTrue((project / "plans" / "REQUIREMENTS.md").is_file())
             self.assertEqual(
                 (backup_root / "Legacy_Project" / "plans" / "STATUS.md").read_text(
@@ -293,7 +293,7 @@ class SetupAndMigrationTests(unittest.TestCase):
             )
             self.assertNotIn("version", identity)
             self.assertEqual(identity["schema_version"], 2)
-            self.assertEqual(identity["manager_version"], "V4_260706")
+            self.assertEqual(identity["manager_version"], "V4.1_260707")
 
     def test_project_symlink_is_conflicting(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
